@@ -18,11 +18,11 @@ spec:
         - name: vprodb
           image: vprofile/vprofiledb
       volumeMounts:
-        - mountPath: /var/lib/mysql/
-          name: vpro-db-data
+      - mountPath: /var/lib/mysql/
+        name: vpro-db-data
       ports:
-        - name: vpodb-port
-          containerPort: 3306
+      - name: vpodb-port
+        containerPort: 3306
       env:
        - name: MYSQL_ROOT_PASSWORD
          valueFrom:
