@@ -15,32 +15,36 @@ spec:
         app: vprodb
     spec:
       containers:
-        - name: vprodb
-          image: vprofile/vprofiledb
-      volumeMounts:
-      - mountPath: /var/lib/mysql/
-        name: vpro-db-data
-      ports:
-      - name: vpodb-port
-        containerPort: 3306
-      env:
-       - name: MYSQL_ROOT_PASSWORD
-         valueFrom:
-           secretKeyRef:
-             name: app-secret
-             key: db-pass
-    nodeSelector:
-      zone: us-east-2a
-    volumes:
-      - name: vpro-db-data
-        awsElasticBlockStore:
-          volumeID: "vol-0ff38b4c9b0bc7fd0"
-          fstype : ext4
-
-    initContainers:
-      - name: busybox
-        image: busybox:latest
-        args: ["rm","-rf","/var/lib/mysql/lost+found"]
+      - name: vprodb
+        image: vprofile/vprofiledb
+          #args:
+          #- "--ignore-db-dir"
+          #- "lost+found"
         volumeMounts:
-          - mountPath: /var/lib/mysql/
-            name: vpro-db-data
+        - mountPath: /var/lib/mysql
+          name: vpro-db-data
+        ports:
+        - name: vprodb-port
+          containerPort: 3306
+        env:
+         - name: MYSQL_ROOT_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: app-secret
+               key: db-pass
+      nodeSelector:
+        zone: us-east-1a
+      volumes:
+        - name: vpro-db-data
+          # This AWS EBS volume must already exist.
+          awsElasticBlockStore:
+             volumeID: MentiondVoumeID
+             fsType: ext4
+
+      initContainers:
+        - name: busybox
+          image: busybox:latest
+          args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
+          volumeMounts:
+            - name: vpro-db-data
+              mountPath: /var/lib/mysql
